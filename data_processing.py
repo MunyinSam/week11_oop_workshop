@@ -63,31 +63,46 @@ print("The min temperature of all the cities in", my_country, ":")
 print(min(temps))
 print()
 
-def aggregate(aggregation_key, aggregation_function, dict_list):
+class CitiesDB:
 
-    _list = []
-    for value in dict_list:
-        _list.append(float(value[aggregation_key]))
-    
-    print(aggregation_function(_list))
+    def __init__(self, cities):
+        self.cities = cities
 
+    def aggregate(self, aggregation_key, aggregation_function, dict_list):
 
-aggregate(
+        _list = []
+        for value in dict_list:
+            _list.append(float(value[aggregation_key]))
+        
+        print(aggregation_function(_list))
+
+    def filter(self, condition):
+
+        filtered_list = []
+        for item in self.cities:
+            if condition(item):
+                filtered_list.append(item)
+        return filtered_list
+
+print(cities)
+cities_db = CitiesDB(cities)
+
+cities_db.aggregate(
     "temperature", 
     lambda x: sum(x)/len(x),
-    filter(lambda x: x['country']=='Italy', cities)
+    cities_db.filter(lambda x: x['country']=='Italy')
 )
 
-aggregate(
+cities_db.aggregate(
     "temperature", 
     lambda x: min(x),
-    filter(lambda x: x['country']=='Italy', cities)
+    cities_db.filter(lambda x: x['country']=='Italy')
 )
 
-aggregate(
+cities_db.aggregate(
     "temperature", 
     lambda x: max(x),
-    filter(lambda x: x['country']=='Italy', cities)
+    cities_db.filter(lambda x: x['country']=='Italy')
 )
 # Let's write code to
 # - print the average temperature for all the cities in Italy
