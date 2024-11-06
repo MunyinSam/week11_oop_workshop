@@ -119,20 +119,18 @@ specific_country = countries_db.filter(lambda x: x['EU'] == "yes" and x['coastli
 country_names = [country['country'] for country in specific_country]
 
 wanted_country = cities_db.filter(lambda x: x['country'] in country_names)
-print(wanted_country)
+
 cities_db = cities_db.aggregate(
     "temperature",
     lambda x: min(float(i) for i in x),
     wanted_country
 )
-print(cities_db)
+# print(cities_db)
 
 
 # print(cities_db.filter(lambda x: x['city'] in country_names))
 
 # print(specific_country)
-
-
 
 
 # cities_db.aggregate(
@@ -145,3 +143,52 @@ print(cities_db)
 # - print the average temperature for all the cities in Sweden
 # - print the min temperature for all the cities in Italy
 # - print the max temperature for all the cities in Sweden
+
+class TableDB:
+    def __init__(self):
+        self.table_database = []
+
+    def insert(self, table):
+        self.table_database.append(table)
+    def search(self, table_name):
+        for table in self.table_database:
+            if table.table_name == table_name:
+                return table
+
+class Table:
+    def __init__(self, table_name, table):
+        self.table_name = table_name
+        self.table = table
+
+    def filter(self, condition):
+        return [x for x in self.table if condition(x)]
+
+    def aggregate(self, aggregation_function, aggregation_key):
+
+        return [x for x in self.table if aggregation_function(x[aggregation_key])]
+
+    
+    def __str__(self):
+        return f"Table: {self.table} / Table_name: {self.table_name}"
+
+
+
+print()
+cities = []
+with open(os.path.join(__location__, 'Cities.csv')) as f:
+    rows = csv.DictReader(f)
+    for r in rows:
+        cities.append(dict(r))
+
+countries = []
+with open(os.path.join(__location__, 'Countries.csv')) as f:
+    rows = csv.DictReader(f)
+    for r in rows:
+        countries.append(dict(r))
+
+db = TableDB()
+db.insert(Table("test1", cities))
+searched_db = db.search("test1")
+filtered_db = searched_db.filter(lambda x: x['city'] == "Aalborg")
+print(filtered_db)
+print(searched_db.aggregate(lambda x: float(x) > 15, 'temperature'))
