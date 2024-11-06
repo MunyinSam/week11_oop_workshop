@@ -63,83 +63,48 @@ print("The min temperature of all the cities in", my_country, ":")
 print(min(temps))
 print()
 
-class CitiesDB:
+# Let's write a function to filter out only items that meet the condition
+# Hint: condition will be associated with an anonymous function, e.x., lamdbda x: max(x)
+def filter(condition, dict_list):
+    filtered_list = []
+    for item in dict_list:
+        if condition(item):
+            filtered_list.append(item)
+    return filtered_list
 
-    def __init__(self, cities):
-        self.cities = cities
+x = filter(lambda x: float(x['latitude']) >= 60.0, cities)
+for item in x:
+    print(item)
 
-    def aggregate(self, aggregation_key, aggregation_function, dict_list):
-        
-        _list = []
-        print(dict_list)
-        
-        for value in dict_list:
-            _list.append(value[aggregation_key])
-        print(_list)
-        return aggregation_function(_list)
-        
+# Let's write a function to do aggregation given an aggregation function and an aggregation key
+def aggregate(aggregation_key, aggregation_function, dict_list):
 
-    def filter(self, condition):
-
-        filtered_list = []
-        for item in self.cities:
-            if condition(item):
-                filtered_list.append(item)
-        return filtered_list
+    _list = []
+    for value in dict_list:
+        _list.append(float(value[aggregation_key]))
     
-class CountryDB:
-
-    def __init__(self, countries):
-        self.countries = countries
-
-    def aggregate(self, aggregation_key, aggregation_function, dict_list):
-
-        _list = []
-        for value in dict_list:
-            _list.append(value[aggregation_key])
-        
-        print(aggregation_function(_list))
-        return _list
-
-    def filter(self, condition):
-
-        filtered_list = []
-        for item in self.countries:
-            if condition(item):
-                filtered_list.append(item)
-        return filtered_list
+    print(aggregation_function(_list))
 
 
-cities_db = CitiesDB(cities)
-countries_db = CountryDB(countries)
-
-
-specific_country = countries_db.filter(lambda x: x['EU'] == "yes" and x['coastline'] == "no")
-
-country_names = [country['country'] for country in specific_country]
-
-wanted_country = cities_db.filter(lambda x: x['country'] in country_names)
-print(wanted_country)
-cities_db = cities_db.aggregate(
-    "temperature",
-    lambda x: min(float(i) for i in x),
-    wanted_country
+aggregate(
+    "temperature", 
+    lambda x: sum(x)/len(x),
+    filter(lambda x: x['country']=='Italy', cities)
 )
-print(cities_db)
+
+aggregate(
+    "temperature", 
+    lambda x: min(x),
+    filter(lambda x: x['country']=='Italy', cities)
+)
+
+aggregate(
+    "temperature", 
+    lambda x: max(x),
+    filter(lambda x: x['country']=='Italy', cities)
+)
 
 
-# print(cities_db.filter(lambda x: x['city'] in country_names))
-
-# print(specific_country)
-
-
-
-
-# cities_db.aggregate(
-#     "temperature", 
-#     lambda x: x,
-#     cities_db.filter(lambda x: x['country'] == city)
-#     )
 # Let's write code to
 # - print the average temperature for all the cities in Italy
 # - print the average temperature for all the cities in Sweden
