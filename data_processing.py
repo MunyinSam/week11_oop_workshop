@@ -151,9 +151,11 @@ class TableDB:
     def insert(self, table):
         self.table_database.append(table)
     def search(self, table_name):
+
         for table in self.table_database:
             if table.table_name == table_name:
                 return table
+
 
 class Table:
     def __init__(self, table_name, table):
